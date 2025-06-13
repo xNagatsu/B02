@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  docuseal:
+    image: docuseal/docuseal:latest
+    container_name: docuseal-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # On n'expose PAS le port 3000 sur l'hôte, accès via proxy uniquement
+    # ports:
+    #   - "3000:3000"
+    volumes:
+      - docuseal_data:/data/docuseal
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/docuseal
+      # Optionnel : décommentez si vous utilisez HTTPS
+      # - FORCE_SSL=true
+    networks:
+      - proxy_to_front        # Réseau partagé avec nginx-proxy-manager
+      - internal_db_network   # Réseau privé avec la DB
+
+  postgres:
+    image: postgres:15
+    container_name: docuseal-postgres
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: docuseal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal_db_network
+
+# Définition des réseaux
+networks:
+  proxy_to_front:
+    external: true
+  internal_db_network:
+    driver: bridge
+    internal: true
+    name: docuseal_internal_db
+
+# Définition des volumes nommés
+volumes:
+  docuseal_data:
+    name: docuseal_app_data
+  postgres_data:
+    name: docuseal_postgres_data
