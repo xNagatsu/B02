@@ -15,7 +15,6 @@ Puis on déploie notre stack
 
 Ici, dans la vidéo suivante, j'édite rapidement le docker compose pour le faire coexister avec le "réel"
 
-https://github.com/user-attachments/assets/4d381e0b-89e6-4d5e-bb08-1c9e1bbd5ed6
 
 # ⚙️ Config
 >==SMTP=========================================== <br>
