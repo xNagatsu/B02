@@ -44,3 +44,15 @@ Test de kubectl
 kubectl get nodes
 kubectl get pods --all-namespaces
 ```
+# Installation de k3d
+```
+curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+```
+
+# Créer un cluster avec 1 master + 2 workers
+```
+k3d cluster create docuseal-cluster --agents 2
+```
+
+# Vérifier
+kubectl get nodes
