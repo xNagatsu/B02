@@ -50,5 +50,5 @@ Un réseau intermédiaire entre mon proxy et mes services auquel je veux accéde
 
 ```
 docker network create to_wan
-docker network create proxy_to_front --internal
+docker network create proxy_to_front
 ```
