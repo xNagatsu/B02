@@ -27,7 +27,8 @@ Mot de passe : password <br>
 Une fois, notre compte crée, on va passer la configuration du SMTP.
 Il faut se rendre dans Paramètre ➡️ Email
 
-![image](https://github.com/user-attachments/assets/77175b04-9c12-4475-a5b4-ae1156455433)
+![image](https://github.com/user-attachments/assets/ac0c2daf-4326-4a14-9fe9-1cb9ff370691)
+
 
 Et voilà ! 
 
