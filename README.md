@@ -1,3 +1,7 @@
+# Kubernetes 
+> Cluster K3S avec 2 VM , un node sur le master et un node sur le worker
+> 
+
 ## 📁 Structure des fichiers
 
 ```
