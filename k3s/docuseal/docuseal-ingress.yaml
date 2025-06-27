@@ -1,0 +1,33 @@
+# ====================================
+# DOCUSEAL - INGRESS
+# ====================================
+# Route HTTPS pour accéder à DocuSeal
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: docuseal-ingress
+  namespace: docuseal
+  annotations:
+    # Utiliser Traefik
+    spec.ingressClassName: "traefik"
+    
+    # Certificat SSL automatique
+    traefik.ingress.kubernetes.io/router.tls.certresolver: "letsencrypt"
+spec:
+  tls:
+  - hosts:
+    - docuseal.vincent.mrt.fr
+    secretName: docuseal-tls-cert
+  
+  rules:
+  - host: docuseal.vincent.mrt.fr
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: docuseal-service    # Load balance entre les 2 pods
+            port:
+              number: 3000
