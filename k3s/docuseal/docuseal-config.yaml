@@ -1,0 +1,14 @@
+# ====================================
+# DOCUSEAL - CONFIGURATION
+# ====================================
+# ⚠️  Les secrets sont maintenant dans secrets.yaml
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: docuseal-config
+  namespace: docuseal
+data:
+  RAILS_ENV: "production"
+  FORCE_SSL: "false"             # Traefik gère le SSL
+  HOST: "docuseal.vincent.mrt.fr"
