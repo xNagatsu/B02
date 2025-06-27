@@ -1,0 +1,29 @@
+# ====================================
+# POSTGRESQL - NETWORK POLICY
+# ====================================
+# Règles de sécurité réseau (optionnel)
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: postgres-network-policy
+  namespace: postgres
+spec:
+  podSelector:
+    matchLabels:
+      app: postgres
+  
+  # Types de trafic
+  policyTypes:
+  - Ingress
+  
+  # Règles entrantes
+  ingress:
+  # Autoriser DocuSeal à se connecter
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: docuseal
+    ports:
+    - protocol: TCP
+      port: 5432
