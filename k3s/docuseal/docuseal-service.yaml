@@ -1,0 +1,23 @@
+# ====================================
+# DOCUSEAL - SERVICE
+# ====================================
+# Load balancer entre les 2 pods DocuSeal
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: docuseal-service
+  namespace: docuseal
+spec:
+  selector:
+    app: docuseal
+  ports:
+  - port: 3000
+    targetPort: 3000
+  type: ClusterIP
+  
+  # Session affinity pour garder un utilisateur sur le même pod
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 3600       # 1 heure
