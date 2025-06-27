@@ -1,0 +1,20 @@
+# ====================================
+# POSTGRESQL - SERVICE
+# ====================================
+# Permet aux pods DocuSeal d'accéder à PostgreSQL
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  namespace: postgres
+spec:
+  selector:
+    app: postgres
+  ports:
+  - port: 5432           # Port PostgreSQL
+    targetPort: 5432
+  type: ClusterIP        # Accessible seulement dans le cluster
+  
+  # Les pods DocuSeal sur node1 et node2 pourront 
+  # se connecter via : postgres-service.postgres:5432
