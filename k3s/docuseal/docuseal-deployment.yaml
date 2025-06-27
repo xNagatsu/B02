@@ -1,0 +1,128 @@
+# ====================================
+# DOCUSEAL - DEPLOYMENT
+# ====================================
+# 2 pods DocuSeal : 1 sur node1, 1 sur node2
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: docuseal
+  namespace: docuseal
+spec:
+  serviceName: docuseal-headless
+  replicas: 2                    # 2 pods DocuSeal
+  selector:
+    matchLabels:
+      app: docuseal
+  template:
+    metadata:
+      labels:
+        app: docuseal
+    spec:
+      # Anti-affinité : forcer les pods sur des nodes différents
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app: docuseal
+            topologyKey: kubernetes.io/hostname
+      
+      # Attendre PostgreSQL
+      initContainers:
+      - name: wait-for-db
+        image: busybox:1.35
+        command: ['sh', '-c', 'until nc -z postgres-service.postgres 5432; do sleep 2; done']
+      
+      containers:
+      - name: docuseal
+        image: docuseal/docuseal:latest
+        ports:
+        - containerPort: 3000
+        
+        env:
+        # Configuration depuis ConfigMap
+        - name: RAILS_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: docuseal-config
+              key: RAILS_ENV
+        - name: FORCE_SSL
+          valueFrom:
+            configMapKeyRef:
+              name: docuseal-config
+              key: FORCE_SSL
+        
+        # Secrets
+        - name: SECRET_KEY_BASE
+          valueFrom:
+            secretKeyRef:
+              name: docuseal-secret
+              key: SECRET_KEY_BASE
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: docuseal-secret
+              key: DATABASE_URL
+        
+        # Info du pod
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        
+        volumeMounts:
+        - name: docuseal-data
+          mountPath: /data
+        
+        # Vérifications santé
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+  
+  # Chaque pod aura son propre volume
+  volumeClaimTemplates:
+  - metadata:
+      name: docuseal-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: local-path
+      resources:
+        requests:
+          storage: 10Gi
+
+---
+# Service headless pour le StatefulSet
+apiVersion: v1
+kind: Service
+metadata:
+  name: docuseal-headless
+  namespace: docuseal
+spec:
+  clusterIP: None
+  selector:
+    app: docuseal
+  ports:
+  - port: 3000
