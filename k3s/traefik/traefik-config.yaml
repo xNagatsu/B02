@@ -1,0 +1,9 @@
+# ====================================
+# TRAEFIK - CONFIGURATION
+# ====================================
+# ⚠️  Les secrets OVH sont maintenant dans secrets.yaml
+
+# Ce fichier est maintenant vide car toute la config
+# était constituée de secrets.
+# Vous pouvez le supprimer ou y ajouter d'autres
+# configurations non-sensibles si nécessaire.
