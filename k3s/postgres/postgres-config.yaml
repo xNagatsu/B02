@@ -1,0 +1,13 @@
+# ====================================
+# POSTGRESQL - CONFIGURATION
+# ====================================
+# ⚠️  Les secrets sont maintenant dans secrets.yaml
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: postgres
+data:
+  POSTGRES_DB: "docuseal"          # Nom de la base
+  POSTGRES_USER: "docuseal_user"   # Utilisateur
