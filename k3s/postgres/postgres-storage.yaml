@@ -1,0 +1,17 @@
+# ====================================
+# POSTGRESQL - STOCKAGE
+# ====================================
+# Disque persistant pour sauvegarder les données
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-data-pvc
+  namespace: postgres
+spec:
+  storageClassName: local-path   # Stockage local K3s
+  accessModes:
+    - ReadWriteOnce              # Un seul pod peut écrire
+  resources:
+    requests:
+      storage: 3Gi              # 3 Go pour la base de données
