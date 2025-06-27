@@ -1,0 +1,136 @@
+# ====================================
+# DOCUSEAL - NETWORK POLICY CORRIGÉE
+# ====================================
+# Permet l'accès SMTP vers l'extérieur
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: docuseal-network-policy
+  namespace: docuseal
+spec:
+  podSelector:
+    matchLabels:
+      app: docuseal
+  
+  policyTypes:
+  - Ingress
+  - Egress
+  
+  # TRAFIC ENTRANT (pas de changement)
+  ingress:
+  # Depuis Traefik
+  - from:
+    - namespaceSelector:
+        matchLabels:# ====================================
+# DOCUSEAL - NETWORK POLICY CORRIGÉE
+# ====================================
+# Permet l'accès SMTP vers l'extérieur
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: docuseal-network-policy
+  namespace: docuseal
+spec:
+  podSelector:
+    matchLabels:
+      app: docuseal
+  
+  policyTypes:
+  - Ingress
+  - Egress
+  
+  # TRAFIC ENTRANT (pas de changement)
+  ingress:
+  # Depuis Traefik
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: traefik
+    ports:
+    - protocol: TCP
+      port: 3000
+  
+  # TRAFIC SORTANT (CORRIGÉ)
+  egress:
+  # Vers PostgreSQL
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: postgres
+    ports:
+    - protocol: TCP
+      port: 5432
+  
+  # DNS (IMPORTANT pour résoudre smtp.gmail.com)
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+  
+  # SMTP - TOUS LES PORTS POSSIBLES
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 25      # SMTP standard
+    - protocol: TCP
+      port: 465     # SMTP SSL (Gmail)
+    - protocol: TCP
+      port: 587     # SMTP TLS/STARTTLS
+    - protocol: TCP
+      port: 2525    # SMTP alternatif
+  
+  # HTTPS sortant (pour APIs, webhooks, etc.)
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
+
+          name: traefik
+    ports:
+    - protocol: TCP
+      port: 3000
+  
+  # TRAFIC SORTANT (CORRIGÉ)
+  egress:
+  # Vers PostgreSQL
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: postgres
+    ports:
+    - protocol: TCP
+      port: 5432
+  
+  # DNS (IMPORTANT pour résoudre smtp.gmail.com)
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+  
+  # SMTP - TOUS LES PORTS POSSIBLES
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 25      # SMTP standard
+    - protocol: TCP
+      port: 465     # SMTP SSL (Gmail)
+    - protocol: TCP
+      port: 587     # SMTP TLS/STARTTLS
+    - protocol: TCP
+      port: 2525    # SMTP alternatif
+  
+  # HTTPS sortant (pour APIs, webhooks, etc.)
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
