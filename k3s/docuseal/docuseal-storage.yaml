@@ -1,0 +1,18 @@
+# ====================================
+# DOCUSEAL - STOCKAGE
+# ====================================
+# Volumes pour stocker les documents
+
+# Volume partagé pour les documents
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: docuseal-data-pvc
+  namespace: docuseal
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce              # Pour K3s local-path
+  resources:
+    requests:
+      storage: 3Gi              # 3 Go pour les documents
