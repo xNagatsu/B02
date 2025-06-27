@@ -1,0 +1,50 @@
+# ====================================
+# TRAEFIK - NETWORK POLICY SIMPLIFIÉE
+# ====================================
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: traefik-network-policy
+  namespace: traefik
+spec:
+  podSelector:
+    matchLabels:
+      app: traefik
+  
+  policyTypes:
+  - Ingress
+  - Egress
+  
+  # TRAFIC ENTRANT
+  ingress:
+  # Accepter tout le trafic externe (80 et 443)
+  - from: []
+    ports:
+    - protocol: TCP
+      port: 80
+    - protocol: TCP
+      port: 443
+  
+  # TRAFIC SORTANT
+  egress:
+  # Vers DocuSeal uniquement
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: docuseal
+    ports:
+    - protocol: TCP
+      port: 3000
+  
+  # DNS (nécessaire)
+  - ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+  
+  # HTTPS externe (Let's Encrypt)
+  - ports:
+    - protocol: TCP
+      port: 443
